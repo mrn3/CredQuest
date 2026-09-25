@@ -207,5 +207,5 @@ io.on('connection', socket => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Lego Cred Quest running at http://localhost:${PORT}`);
+  console.log(`Cred Quest running at http://localhost:${PORT}`);
 });

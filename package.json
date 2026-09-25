@@ -1,8 +1,8 @@
 {
-  "name": "lego-cred-quest",
+  "name": "cred-quest",
   "version": "1.0.0",
   "private": true,
-  "description": "Animated LEGO-style game: evolve your minifig, buy weapons & powerups, build and sell creations to other players, and battle through 50 levels of Beast Hunters.",
+  "description": "Animated brick-building game: evolve your minifig, buy weapons & powerups, build and sell creations to other players, and battle through 50 levels of Beast Hunters.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

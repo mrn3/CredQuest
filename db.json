@@ -1,0 +1,37 @@
+{
+  "players": {
+    "p_1790345855410_nd4z8fz": {
+      "id": "p_1790345855410_nd4z8fz",
+      "name": "Minifig",
+      "cred": 100,
+      "lifetimeCred": 100,
+      "inventory": {
+        "weapons": [],
+        "powerups": []
+      },
+      "equipped": {
+        "weapons": [],
+        "powerups": []
+      },
+      "builtItems": [],
+      "online": true
+    },
+    "p_1790346980856_naprdkr": {
+      "id": "p_1790346980856_naprdkr",
+      "name": "Newman",
+      "cred": 115,
+      "lifetimeCred": 115,
+      "inventory": {
+        "weapons": [],
+        "powerups": []
+      },
+      "equipped": {
+        "weapons": [],
+        "powerups": []
+      },
+      "builtItems": [],
+      "online": true
+    }
+  },
+  "listings": []
+}
