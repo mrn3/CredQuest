@@ -50,16 +50,18 @@ function newPlayer(id, name) {
     builtItems: [],
     home: { houseBuildId: null, art: [], furniture: [] },
     vehicleBuildId: null,
+    world: { x: 400, y: 300, homeX: 125, homeY: 155 },
     online: true
   };
 }
 
 function publicPlayer(p) {
-  const { id, name, cred, lifetimeCred, inventory, equipped, builtItems, home, vehicleBuildId } = p;
+  const { id, name, cred, lifetimeCred, inventory, equipped, builtItems, home, vehicleBuildId, world } = p;
   return {
     id, name, cred, lifetimeCred, inventory, equipped, builtItems,
     home: home || { houseBuildId: null, art: [], furniture: [] },
-    vehicleBuildId: vehicleBuildId || null
+    vehicleBuildId: vehicleBuildId || null,
+    world: world || { x: 400, y: 300, homeX: 125, homeY: 155 }
   };
 }
 
@@ -81,7 +83,18 @@ function releaseBuild(p, buildId) {
 function onlineList() {
   return Object.values(db.players)
     .filter(p => p.online)
-    .map(p => ({ id: p.id, name: p.name, lifetimeCred: p.lifetimeCred }));
+    .map(p => {
+      const house = (p.builtItems || []).find(b => b.id === p.home?.houseBuildId);
+      const vehicle = (p.builtItems || []).find(b => b.id === p.vehicleBuildId);
+      return {
+        id: p.id,
+        name: p.name,
+        lifetimeCred: p.lifetimeCred,
+        world: p.world || { x: 400, y: 300, homeX: 125, homeY: 155 },
+        house: house ? { name: house.name, thumbnail: house.thumbnail } : null,
+        vehicle: vehicle ? { thumbnail: vehicle.thumbnail } : null
+      };
+    });
 }
 
 function findSocketByPlayerId(id) {
@@ -128,6 +141,42 @@ io.on('connection', socket => {
     if (patch.home) p.home = patch.home;
     if (patch.vehicleBuildId !== undefined) p.vehicleBuildId = patch.vehicleBuildId;
     scheduleSave();
+  });
+
+  socket.on('worldMove', ({ x, y }) => {
+    const p = db.players[socket.currentPlayerId];
+    if (!p || !Number.isFinite(x) || !Number.isFinite(y)) return;
+    p.world = p.world || { homeX: 125, homeY: 155 };
+    p.world.x = Math.max(40, Math.min(760, Math.round(x)));
+    p.world.y = Math.max(80, Math.min(410, Math.round(y)));
+    scheduleSave();
+    socket.to('lobby').volatile.emit('worldPlayers', onlineList());
+  });
+
+  socket.on('placeHome', ({ x, y }) => {
+    const p = db.players[socket.currentPlayerId];
+    const house = p && (p.builtItems || []).find(b => b.id === p.home?.houseBuildId);
+    if (!p || !house || !Number.isFinite(x) || !Number.isFinite(y)) return;
+    p.world = p.world || { x: 400, y: 300 };
+    p.world.homeX = Math.max(85, Math.min(715, Math.round(x)));
+    p.world.homeY = Math.max(110, Math.min(350, Math.round(y)));
+    scheduleSave();
+    io.to('lobby').emit('worldPlayers', onlineList());
+  });
+
+  socket.on('worldChat', rawMessage => {
+    const p = db.players[socket.currentPlayerId];
+    const message = String(rawMessage || '').trim().slice(0, 160);
+    if (!p || !message) return;
+    const origin = p.world || { x: 400, y: 300 };
+    for (const [, peerSocket] of io.sockets.sockets) {
+      const peer = db.players[peerSocket.currentPlayerId];
+      if (!peer || !peer.online) continue;
+      const location = peer.world || { x: 400, y: 300 };
+      if (Math.hypot(location.x - origin.x, location.y - origin.y) <= 240) {
+        peerSocket.emit('worldChat', { id: p.id, name: p.name, message });
+      }
+    }
   });
 
   socket.on('buyItem', ({ itemId, kind }) => {
@@ -230,7 +279,7 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     const id = socket.currentPlayerId;
-    if (id && db.players[id]) {
+    if (id && db.players[id] && !findSocketByPlayerId(id)) {
       db.players[id].online = false;
       scheduleSave();
       io.to('lobby').emit('onlinePlayers', onlineList());

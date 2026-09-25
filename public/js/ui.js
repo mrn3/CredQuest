@@ -281,11 +281,17 @@ const UI = (() => {
   function renderOnlinePlayers() {
     const list = document.getElementById('onlinePlayersList');
     list.innerHTML = '';
-    State.onlinePlayers.forEach(p => {
+    const me = State.player && State.player.world;
+    State.onlinePlayers.filter(p => {
+      if (p.id === State.playerId) return false;
+      return !me || !p.world || Math.hypot(p.world.x - me.x, p.world.y - me.y) <= 240;
+    }).forEach(p => {
       const li = document.createElement('li');
-      li.textContent = `${p.name} (${getTierInfo(p).name})`;
+      const distance = me && p.world ? Math.round(Math.hypot(p.world.x - me.x, p.world.y - me.y)) : null;
+      li.textContent = `${p.name} (${getTierInfo(p).name})${distance === null ? '' : ` · ${distance}m`}`;
       list.appendChild(li);
     });
+    if (!list.children.length) list.innerHTML = '<li>No one else is here yet.</li>';
   }
 
   function renderAll() {

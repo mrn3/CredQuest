@@ -3,7 +3,8 @@ const State = {
   player: null,
   catalog: null,
   listings: [],
-  onlinePlayers: []
+  onlinePlayers: [],
+  chatMessages: []
 };
 
 function ensurePlayerId() {

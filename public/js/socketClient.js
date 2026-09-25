@@ -28,6 +28,17 @@ const Net = (() => {
       UI.renderOnlinePlayers();
     });
 
+    socket.on('worldPlayers', players => {
+      State.onlinePlayers = players;
+      UI.renderOnlinePlayers();
+    });
+
+    socket.on('worldChat', message => {
+      State.chatMessages.push({ ...message, receivedAt: Date.now() });
+      State.chatMessages = State.chatMessages.slice(-30);
+      World.renderChat();
+    });
+
     socket.on('itemSold', data => {
       UI.toast(`💸 ${data.buyer} bought your "${data.name}" for ${data.price} creds!`);
     });
@@ -45,6 +56,7 @@ const Net = (() => {
     p.home.art = p.home.art || [];
     p.home.furniture = p.home.furniture || [];
     p.vehicleBuildId = p.vehicleBuildId || null;
+    p.world = p.world || { x: 400, y: 300, homeX: 125, homeY: 155 };
     return p;
   }
 
@@ -76,5 +88,17 @@ const Net = (() => {
     socket.emit('buyListing', { listingId });
   }
 
-  return { init, syncPlayer, buyItem, listBuild, cancelListing, buyListing };
+  function moveWorld(x, y) {
+    socket.emit('worldMove', { x, y });
+  }
+
+  function placeHome(x, y) {
+    socket.emit('placeHome', { x, y });
+  }
+
+  function chat(message) {
+    socket.emit('worldChat', message);
+  }
+
+  return { init, syncPlayer, buyItem, listBuild, cancelListing, buyListing, moveWorld, placeHome, chat };
 })();

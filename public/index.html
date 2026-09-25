@@ -28,11 +28,21 @@
 
 <main>
   <section id="tab-world" class="tab-panel active">
-    <p class="hint">Use Arrow Keys / WASD to walk around. Your minifig evolves as you earn more creds!</p>
+    <p class="hint">Use Arrow Keys / WASD to explore. Equip a vehicle in My Home to drive it.</p>
     <canvas id="worldCanvas" width="800" height="450"></canvas>
-    <div id="onlinePlayersBox">
-      <h3>Playing With</h3>
-      <ul id="onlinePlayersList"></ul>
+    <div id="worldTools">
+      <button id="placeHomeBtn">Place My Home Here</button>
+      <form id="worldChatForm">
+        <input id="worldChatInput" maxlength="160" placeholder="Talk to nearby players..." autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+    <div id="worldSocial">
+      <div id="onlinePlayersBox">
+        <h3>Nearby Players</h3>
+        <ul id="onlinePlayersList"></ul>
+      </div>
+      <div id="worldChatBox" aria-live="polite"></div>
     </div>
   </section>
 
