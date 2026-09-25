@@ -45,12 +45,13 @@ const Brick3D = (() => {
       let r = [f[2], 0, -f[0]];
       const rl = Math.hypot(r[0], r[1], r[2]) || 1;
       r = [r[0] / rl, 0, r[2] / rl];
+      // Screen-down vector, so larger world Y draws higher on the canvas.
       const u = [
         r[1] * f[2] - r[2] * f[1],
         r[2] * f[0] - r[0] * f[2],
         r[0] * f[1] - r[1] * f[0]
       ];
-      return { f, r, u: [-u[0], -u[1], -u[2]] };
+      return { f, r, u };
     }
 
     function viewScale(w, h) {
@@ -123,9 +124,9 @@ const Brick3D = (() => {
         const nd = f.n[0] * bs.f[0] + f.n[1] * bs.f[1] + f.n[2] * bs.f[2];
         if (nd > 0.02 && !f.a) continue; // back-face cull (opaque only)
         const pts = f.v.map(proj);
-        let depth = 0;
-        for (const p of pts) depth += p[2];
-        items.push({ f, pts, depth: depth / pts.length, nd });
+        let depth = -Infinity;
+        for (const p of pts) if (p[2] > depth) depth = p[2];
+        items.push({ f, pts, depth, nd });
       }
       items.sort((a, b) => b.depth - a.depth);
 
