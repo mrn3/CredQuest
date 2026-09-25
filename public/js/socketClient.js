@@ -41,6 +41,10 @@ const Net = (() => {
     p.inventory = p.inventory || { weapons: [], powerups: [] };
     p.equipped = p.equipped || { weapons: [], powerups: [] };
     p.builtItems = p.builtItems || [];
+    p.home = p.home || { houseBuildId: null, art: [], furniture: [] };
+    p.home.art = p.home.art || [];
+    p.home.furniture = p.home.furniture || [];
+    p.vehicleBuildId = p.vehicleBuildId || null;
     return p;
   }
 
@@ -50,7 +54,9 @@ const Net = (() => {
       lifetimeCred: State.player.lifetimeCred,
       inventory: State.player.inventory,
       equipped: State.player.equipped,
-      builtItems: State.player.builtItems
+      builtItems: State.player.builtItems,
+      home: State.player.home,
+      vehicleBuildId: State.player.vehicleBuildId
     });
   }
 

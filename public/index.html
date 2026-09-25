@@ -20,6 +20,7 @@
   <button class="tab-btn active" data-tab="world">World</button>
   <button class="tab-btn" data-tab="store">Store</button>
   <button class="tab-btn" data-tab="build">Build</button>
+  <button class="tab-btn" data-tab="home">My Home</button>
   <button class="tab-btn" data-tab="marketplace">Marketplace</button>
   <button class="tab-btn" data-tab="beasthunters">Beast Hunters</button>
   <button class="tab-btn" data-tab="inventory">Inventory</button>
@@ -50,18 +51,79 @@
   </section>
 
   <section id="tab-build" class="tab-panel">
-    <h2>Build Studio</h2>
-    <div class="build-layout">
-      <div class="palette" id="brickPalette"></div>
-      <canvas id="buildCanvas"></canvas>
-      <div class="build-controls">
-        <button id="clearBuildBtn">Clear</button>
-        <input id="buildNameInput" placeholder="Creation name" maxlength="24" />
-        <button id="saveBuildBtn">Save to Inventory</button>
+    <h2>3D Brick Studio</h2>
+    <p class="hint">
+      <b>Click</b> a stud or baseplate to snap a brick on · <b>Drag</b> to orbit · <b>Shift-drag</b> or <b>right-drag</b> to pan ·
+      <b>Scroll</b> to zoom · <b>Right-click</b> a brick to delete · <b>R</b> rotates the part
+    </p>
+    <div class="studio">
+      <div class="studio-left">
+        <div id="partGroups" class="group-tabs"></div>
+        <div id="partPalette" class="part-palette"></div>
+        <div class="palette-title">Colors</div>
+        <div class="palette" id="brickPalette"></div>
+      </div>
+      <div class="studio-main">
+        <div class="studio-toolbar">
+          <button class="tool-btn active" data-tool="build">🧱 Build</button>
+          <button class="tool-btn" data-tool="erase">🗑 Erase</button>
+          <button class="tool-btn" data-tool="paint">🎨 Paint</button>
+          <button id="rotatePartBtn">⟳ Rotate Part (0°)</button>
+          <button id="undoBuildBtn">↶ Undo</button>
+          <button id="clearBuildBtn">Clear</button>
+          <span class="brick-counter"><b id="brickCount">0</b> bricks</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="buildCanvas"></canvas>
+        </div>
+        <div class="studio-toolbar">
+          <span class="toolbar-label">Camera</span>
+          <button id="camLeftBtn">⟲</button>
+          <button id="camRightBtn">⟳</button>
+          <button id="camUpBtn">▲</button>
+          <button id="camDownBtn">▼</button>
+          <button id="camInBtn">＋</button>
+          <button id="camOutBtn">－</button>
+          <button id="camResetBtn">Reset View</button>
+        </div>
+        <div class="studio-toolbar save-row">
+          <input id="buildNameInput" placeholder="Creation name" maxlength="24" />
+          <select id="buildCategorySelect"></select>
+          <button id="saveBuildBtn" class="primary-btn">Save to Inventory</button>
+        </div>
+        <p class="hint" id="buildCategoryHint"></p>
       </div>
     </div>
     <h3>Your Creations</h3>
     <div id="yourBuildsList" class="item-grid"></div>
+  </section>
+
+  <section id="tab-home" class="tab-panel">
+    <h2>My Home</h2>
+    <p class="hint">Creations have a purpose: live in a house, hang art on the walls, put furniture on the floor and drive a car. Anything you <b>buy from another player</b> works here too.</p>
+    <div class="home-layout">
+      <div class="home-side">
+        <h3>Residence</h3>
+        <div id="homeStatus"></div>
+        <select id="houseSelect"></select>
+        <div class="row">
+          <button id="moveInBtn" class="primary-btn">Move In</button>
+          <button id="moveOutBtn" class="danger-btn hidden">Move Out</button>
+        </div>
+        <h3>Garage</h3>
+        <div id="vehicleStatus"></div>
+        <select id="vehicleSelect"></select>
+        <div class="row">
+          <button id="driveBtn" class="primary-btn">Drive It</button>
+          <button id="parkBtn" class="danger-btn hidden">Park</button>
+        </div>
+        <h3>Living Bonuses</h3>
+        <div id="homeBonuses" class="bonus-list"></div>
+      </div>
+      <div class="home-main">
+        <canvas id="homeCanvas" width="800" height="440"></canvas>
+      </div>
+    </div>
   </section>
 
   <section id="tab-marketplace" class="tab-panel">
@@ -129,12 +191,23 @@
   </div>
 </div>
 
+<div id="pickerModal" class="modal hidden">
+  <div class="modal-box wide">
+    <h2 id="pickerTitle">Choose</h2>
+    <div id="pickerList" class="item-grid"></div>
+    <button id="pickerCloseBtn">Close</button>
+  </div>
+</div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/levels.js"></script>
 <script src="js/character.js"></script>
 <script src="js/state.js"></script>
+<script src="js/parts.js"></script>
+<script src="js/renderer3d.js"></script>
 <script src="js/world.js"></script>
 <script src="js/build.js"></script>
+<script src="js/home.js"></script>
 <script src="js/battle.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/socketClient.js"></script>

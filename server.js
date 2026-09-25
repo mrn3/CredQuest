@@ -48,13 +48,34 @@ function newPlayer(id, name) {
     inventory: { weapons: [], powerups: [] },
     equipped: { weapons: [], powerups: [] },
     builtItems: [],
+    home: { houseBuildId: null, art: [], furniture: [] },
+    vehicleBuildId: null,
     online: true
   };
 }
 
 function publicPlayer(p) {
-  const { id, name, cred, lifetimeCred, inventory, equipped, builtItems } = p;
-  return { id, name, cred, lifetimeCred, inventory, equipped, builtItems };
+  const { id, name, cred, lifetimeCred, inventory, equipped, builtItems, home, vehicleBuildId } = p;
+  return {
+    id, name, cred, lifetimeCred, inventory, equipped, builtItems,
+    home: home || { houseBuildId: null, art: [], furniture: [] },
+    vehicleBuildId: vehicleBuildId || null
+  };
+}
+
+// Drop references to a creation the player no longer owns.
+function releaseBuild(p, buildId) {
+  if (!p) return;
+  if (p.vehicleBuildId === buildId) p.vehicleBuildId = null;
+  if (!p.home) return;
+  if (p.home.houseBuildId === buildId) {
+    p.home.houseBuildId = null;
+    p.home.art = [];
+    p.home.furniture = [];
+    return;
+  }
+  p.home.art = (p.home.art || []).map(id => (id === buildId ? null : id));
+  p.home.furniture = (p.home.furniture || []).map(id => (id === buildId ? null : id));
 }
 
 function onlineList() {
@@ -104,6 +125,8 @@ io.on('connection', socket => {
     if (patch.inventory) p.inventory = patch.inventory;
     if (patch.equipped) p.equipped = patch.equipped;
     if (patch.builtItems) p.builtItems = patch.builtItems;
+    if (patch.home) p.home = patch.home;
+    if (patch.vehicleBuildId !== undefined) p.vehicleBuildId = patch.vehicleBuildId;
     scheduleSave();
   });
 
@@ -135,13 +158,18 @@ io.on('connection', socket => {
       sellerId: p.id,
       sellerName: p.name,
       name: built.name,
+      category: built.category || 'other',
       thumbnail: built.thumbnail,
-      grid: built.grid,
+      model: built.model || null,
+      grid: built.grid || null,
+      brickCount: built.brickCount || (built.model ? built.model.length : 0),
       price: Math.max(1, Math.round(build.price))
     };
     db.listings.push(listing);
+    releaseBuild(p, built.id);
     scheduleSave();
     io.to('lobby').emit('listingsUpdated', db.listings);
+    socket.emit('playerUpdated', publicPlayer(p));
   });
 
   socket.on('cancelListing', ({ listingId }) => {
@@ -173,12 +201,16 @@ io.on('connection', socket => {
     if (seller) {
       seller.cred += listing.price;
       seller.builtItems = seller.builtItems.filter(b => b.id !== listing.buildId);
+      releaseBuild(seller, listing.buildId);
     }
     buyer.builtItems.push({
       id: 'owned_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
       name: listing.name,
+      category: listing.category || 'other',
       thumbnail: listing.thumbnail,
-      grid: listing.grid,
+      model: listing.model || null,
+      grid: listing.grid || null,
+      brickCount: listing.brickCount || 0,
       listed: false,
       boughtFrom: listing.sellerName
     });

@@ -1,12 +1,12 @@
 const UI = (() => {
+  function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+  }
+
   function initTabs() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      });
+      btn.addEventListener('click', () => showTab(btn.dataset.tab));
     });
   }
 
@@ -176,33 +176,76 @@ const UI = (() => {
     renderAll();
   }
 
+  const CAT_LABEL = {
+    house: '🏠 House', vehicle: '🚗 Vehicle', art: '🖼 Art',
+    furniture: '🛋 Furniture', other: '🧱 Creation'
+  };
+  const CAT_USE = {
+    house: 'Move into it from the My Home tab.',
+    vehicle: 'Drive it for faster movement in the World.',
+    art: 'Hang it on a wall in your home.',
+    furniture: 'Place it on your floor for comfort.',
+    other: 'Collect it or resell it.'
+  };
+
+  function buildUsage(b) {
+    const p = State.player;
+    const h = p.home || {};
+    if (h.houseBuildId === b.id) return 'Living here';
+    if ((h.art || []).includes(b.id)) return 'Hanging on your wall';
+    if ((h.furniture || []).includes(b.id)) return 'In your room';
+    if (p.vehicleBuildId === b.id) return 'Currently driving';
+    return '';
+  }
+
   function renderBuildsAndMarket() {
     const yourBuilds = document.getElementById('yourBuildsList');
     yourBuilds.innerHTML = '';
+    if (!State.player.builtItems.length) {
+      yourBuilds.innerHTML = '<p class="hint">Nothing built yet. Snap some bricks together above!</p>';
+    }
     State.player.builtItems.forEach(b => {
+      const cat = b.category || 'other';
+      const use = buildUsage(b);
       const card = document.createElement('div');
       card.className = 'item-card';
-      card.innerHTML = `<img class="thumb" src="${b.thumbnail}" /><div class="item-name">${b.name}</div>${b.listed ? '<div class="owned-tag">Listed</div>' : ''}`;
+      card.innerHTML = `<img class="thumb" src="${b.thumbnail}" alt="" />
+        <div class="item-name">${b.name}</div>
+        <div class="cat-badge">${CAT_LABEL[cat]}</div>
+        <div class="item-stat">${b.brickCount ? b.brickCount + ' bricks' : 'legacy 2D build'}${b.boughtFrom ? ` · from ${b.boughtFrom}` : ''}</div>
+        ${use ? `<div class="owned-tag">${use}</div>` : ''}
+        ${b.listed ? '<div class="owned-tag">Listed for sale</div>' : ''}
+        ${b.model ? `<button class="edit-build-btn" data-id="${b.id}">Open in Studio</button>` : ''}`;
       yourBuilds.appendChild(card);
     });
+    yourBuilds.querySelectorAll('.edit-build-btn').forEach(btn => btn.addEventListener('click', e => {
+      const b = State.player.builtItems.find(x => x.id === e.target.dataset.id);
+      if (b) BuildStudio.loadForEditing(b);
+    }));
 
     const select = document.getElementById('listBuildSelect');
     select.innerHTML = '<option value="">Choose a creation...</option>';
     State.player.builtItems.filter(b => !b.listed).forEach(b => {
       const opt = document.createElement('option');
       opt.value = b.id;
-      opt.textContent = b.name;
+      opt.textContent = `${b.name} — ${CAT_LABEL[b.category || 'other']}`;
       select.appendChild(opt);
     });
 
     const marketEl = document.getElementById('marketListings');
     marketEl.innerHTML = '';
+    if (!State.listings.length) {
+      marketEl.innerHTML = '<p class="hint">Nothing for sale right now.</p>';
+    }
     State.listings.forEach(l => {
       const isMine = l.sellerId === State.playerId;
+      const cat = l.category || 'other';
       const card = document.createElement('div');
       card.className = 'item-card';
-      card.innerHTML = `<img class="thumb" src="${l.thumbnail}" /><div class="item-name">${l.name}</div>
-        <div class="item-stat">by ${l.sellerName}</div>
+      card.innerHTML = `<img class="thumb" src="${l.thumbnail}" alt="" /><div class="item-name">${l.name}</div>
+        <div class="cat-badge">${CAT_LABEL[cat]}</div>
+        <div class="item-stat">by ${l.sellerName}${l.brickCount ? ` · ${l.brickCount} bricks` : ''}</div>
+        <div class="use-note">${CAT_USE[cat]}</div>
         <div class="item-cost">💰${l.price}</div>
         ${isMine
           ? `<button class="cancel-btn" data-id="${l.id}">Cancel</button>`
@@ -228,6 +271,8 @@ const UI = (() => {
         return;
       }
       const build = State.player.builtItems.find(b => b.id === buildId);
+      const usage = buildUsage(build);
+      if (usage && !confirm(`"${build.name}" is currently in use (${usage}). Sell it anyway?`)) return;
       Net.listBuild(build, price);
       priceInput.value = '';
     });
@@ -249,7 +294,8 @@ const UI = (() => {
     renderInventory();
     renderBuildsAndMarket();
     renderOnlinePlayers();
+    if (typeof Home !== 'undefined') Home.render();
   }
 
-  return { initTabs, toast, renderAll, initMarketControls, renderOnlinePlayers };
+  return { initTabs, showTab, toast, renderAll, initMarketControls, renderOnlinePlayers };
 })();

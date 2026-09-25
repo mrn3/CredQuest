@@ -9,9 +9,29 @@ const World = (() => {
   function init() {
     canvas = document.getElementById('worldCanvas');
     ctx = canvas.getContext('2d');
-    window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+    window.addEventListener('keydown', e => {
+      if (isTyping(e.target)) return;
+      keys[e.key.toLowerCase()] = true;
+    });
     window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
     requestAnimationFrame(loop);
+  }
+
+  function isTyping(el) {
+    const t = el && el.tagName;
+    return t === 'INPUT' || t === 'SELECT' || t === 'TEXTAREA';
+  }
+
+  const imgCache = new Map();
+  function image(src) {
+    if (!src) return null;
+    let img = imgCache.get(src);
+    if (!img) {
+      img = new Image();
+      img.src = src;
+      imgCache.set(src, img);
+    }
+    return img.complete && img.naturalWidth ? img : null;
   }
 
   function update() {
@@ -22,8 +42,9 @@ const World = (() => {
     if (keys['arrowdown'] || keys['s']) dy += 1;
     moving = dx !== 0 || dy !== 0;
     if (dx !== 0) facing = dx > 0 ? 1 : -1;
-    px = Math.min(canvas.width - 40, Math.max(40, px + dx * 3));
-    py = Math.min(canvas.height - 40, Math.max(80, py + dy * 3));
+    const speed = 3 * (State.player ? getVehicleStats(State.player).speedMult : 1);
+    px = Math.min(canvas.width - 40, Math.max(40, px + dx * speed));
+    py = Math.min(canvas.height - 40, Math.max(80, py + dy * speed));
     if (moving) phase += 0.25; else phase = 0;
   }
 
@@ -45,6 +66,23 @@ const World = (() => {
     if (!State.player || !State.catalog) return;
     const stats = getCombatStats(State.player);
     const tier = stats.tier;
+
+    const homeStats = getHomeStats(State.player);
+    if (homeStats.house) {
+      const img = image(homeStats.house.thumbnail);
+      if (img) ctx.drawImage(img, 40, 60, 170, 170);
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${homeStats.house.name} — your home`, 125, 246);
+    }
+
+    const vStats = getVehicleStats(State.player);
+    if (vStats.vehicle) {
+      const img = image(vStats.vehicle.thumbnail);
+      if (img) ctx.drawImage(img, px - 70, py - 40, 140, 140);
+    }
+
     drawMinifig(ctx, px, py, {
       scale: 1.4,
       walkPhase: phase,
