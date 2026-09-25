@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lego Cred Quest</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">🧱 LEGO CRED QUEST</div>
+  <div class="player-info">
+    <span id="playerName">Minifig</span>
+    <span class="tier-badge" id="tierBadge">Rookie</span>
+    <span class="cred-display">💰 <span id="credAmount">0</span> Creds</span>
+  </div>
+</header>
+
+<nav id="tabs">
+  <button class="tab-btn active" data-tab="world">World</button>
+  <button class="tab-btn" data-tab="store">Store</button>
+  <button class="tab-btn" data-tab="build">Build</button>
+  <button class="tab-btn" data-tab="marketplace">Marketplace</button>
+  <button class="tab-btn" data-tab="beasthunters">Beast Hunters</button>
+  <button class="tab-btn" data-tab="inventory">Inventory</button>
+</nav>
+
+<main>
+  <section id="tab-world" class="tab-panel active">
+    <p class="hint">Use Arrow Keys / WASD to walk around. Your minifig evolves as you earn more creds!</p>
+    <canvas id="worldCanvas" width="800" height="450"></canvas>
+    <div id="onlinePlayersBox">
+      <h3>Playing With</h3>
+      <ul id="onlinePlayersList"></ul>
+    </div>
+  </section>
+
+  <section id="tab-store" class="tab-panel">
+    <h2>Weapon &amp; Powerup Store</h2>
+    <div class="store-columns">
+      <div>
+        <h3>Weapons</h3>
+        <div id="weaponList" class="item-grid"></div>
+      </div>
+      <div>
+        <h3>Powerups</h3>
+        <div id="powerupList" class="item-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-build" class="tab-panel">
+    <h2>Build Studio</h2>
+    <div class="build-layout">
+      <div class="palette" id="brickPalette"></div>
+      <canvas id="buildCanvas"></canvas>
+      <div class="build-controls">
+        <button id="clearBuildBtn">Clear</button>
+        <input id="buildNameInput" placeholder="Creation name" maxlength="24" />
+        <button id="saveBuildBtn">Save to Inventory</button>
+      </div>
+    </div>
+    <h3>Your Creations</h3>
+    <div id="yourBuildsList" class="item-grid"></div>
+  </section>
+
+  <section id="tab-marketplace" class="tab-panel">
+    <h2>Marketplace</h2>
+    <div class="market-columns">
+      <div>
+        <h3>List One of Your Creations</h3>
+        <select id="listBuildSelect"></select>
+        <input id="listPriceInput" type="number" min="1" placeholder="Price in creds" />
+        <button id="listBuildBtn">List for Sale</button>
+      </div>
+      <div>
+        <h3>For Sale</h3>
+        <div id="marketListings" class="item-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-beasthunters" class="tab-panel">
+    <h2>Beast Hunters — Levels 1-50</h2>
+    <div id="levelSelectGrid" class="level-grid"></div>
+    <div id="battleArea" class="battle-area hidden">
+      <canvas id="battleCanvas" width="700" height="300"></canvas>
+      <div class="battle-bars">
+        <div class="bar-label">You: <span id="playerHpText"></span></div>
+        <div class="hp-bar"><div id="playerHpBar" class="hp-fill player"></div></div>
+        <div class="bar-label"><span id="enemyName"></span>: <span id="enemyHpText"></span></div>
+        <div class="hp-bar"><div id="enemyHpBar" class="hp-fill enemy"></div></div>
+      </div>
+      <div id="battleLog" class="battle-log"></div>
+      <div class="battle-buttons">
+        <button id="fightBtn">Fight!</button>
+        <button id="closeBattleBtn">Back to Levels</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-inventory" class="tab-panel">
+    <h2>Inventory &amp; Equipment</h2>
+    <div class="inventory-columns">
+      <div>
+        <h3>Weapons Owned</h3>
+        <div id="ownedWeapons" class="item-grid"></div>
+        <h3>Equipped Weapons (max 3)</h3>
+        <div id="equippedWeapons" class="item-grid"></div>
+      </div>
+      <div>
+        <h3>Powerups Owned</h3>
+        <div id="ownedPowerups" class="item-grid"></div>
+        <h3>Equipped Powerups (max 2)</h3>
+        <div id="equippedPowerups" class="item-grid"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<div id="nameModal" class="modal hidden">
+  <div class="modal-box">
+    <h2>🧱 Welcome to Lego Cred Quest!</h2>
+    <p>Enter your minifig name to start playing:</p>
+    <input id="nameModalInput" maxlength="24" placeholder="Minifig" autofocus />
+    <button id="nameModalBtn">Start Playing</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/character.js"></script>
+<script src="js/state.js"></script>
+<script src="js/world.js"></script>
+<script src="js/build.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/socketClient.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
