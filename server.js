@@ -12,6 +12,8 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const DB_FILE = path.join(__dirname, 'db.json');
 const CATALOG_FILE = path.join(PUBLIC_DIR, 'data', 'catalog.json');
+const WORLD_WIDTH = 2400;
+const WORLD_HEIGHT = 1600;
 
 app.use(express.static(PUBLIC_DIR));
 
@@ -147,8 +149,8 @@ io.on('connection', socket => {
     const p = db.players[socket.currentPlayerId];
     if (!p || !Number.isFinite(x) || !Number.isFinite(y)) return;
     p.world = p.world || { homeX: 125, homeY: 155 };
-    p.world.x = Math.max(40, Math.min(760, Math.round(x)));
-    p.world.y = Math.max(80, Math.min(410, Math.round(y)));
+    p.world.x = Math.max(40, Math.min(WORLD_WIDTH - 40, Math.round(x)));
+    p.world.y = Math.max(40, Math.min(WORLD_HEIGHT - 40, Math.round(y)));
     scheduleSave();
     socket.to('lobby').volatile.emit('worldPlayers', onlineList());
   });
@@ -158,8 +160,8 @@ io.on('connection', socket => {
     const house = p && (p.builtItems || []).find(b => b.id === p.home?.houseBuildId);
     if (!p || !house || !Number.isFinite(x) || !Number.isFinite(y)) return;
     p.world = p.world || { x: 400, y: 300 };
-    p.world.homeX = Math.max(85, Math.min(715, Math.round(x)));
-    p.world.homeY = Math.max(110, Math.min(350, Math.round(y)));
+    p.world.homeX = Math.max(85, Math.min(WORLD_WIDTH - 85, Math.round(x)));
+    p.world.homeY = Math.max(85, Math.min(WORLD_HEIGHT - 85, Math.round(y)));
     scheduleSave();
     io.to('lobby').emit('worldPlayers', onlineList());
   });
