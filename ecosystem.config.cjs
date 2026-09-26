@@ -7,7 +7,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3004,
-        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || ''
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '1000752158709-vaaghcqbnfns08puunded975pbd9bis4.apps.googleusercontent.com'
       }
     }
   ]
