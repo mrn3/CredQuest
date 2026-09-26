@@ -6,7 +6,8 @@ module.exports = {
       script: 'server.js',
       env: {
         NODE_ENV: 'production',
-        PORT: 3004
+        PORT: 3004,
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || ''
       }
     }
   ]

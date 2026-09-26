@@ -7,15 +7,6 @@ const State = {
   chatMessages: []
 };
 
-function ensurePlayerId() {
-  let id = localStorage.getItem('lego_player_id');
-  if (!id) {
-    id = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
-    localStorage.setItem('lego_player_id', id);
-  }
-  return id;
-}
-
 function getTierInfo(player) {
   const tiers = State.catalog.tiers;
   let current = tiers[0];

@@ -343,4 +343,12 @@ input, select {
   box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
 }
 .modal-box h2 { margin-top: 0; }
+.auth-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.auth-tab { flex: 1; opacity: 0.55; }
+.auth-tab.active { opacity: 1; }
+.auth-form { display: flex; flex-direction: column; gap: 8px; }
+.auth-error { color: #d32f2f; font-size: 13px; min-height: 16px; }
+.auth-divider { margin: 12px 0 8px; color: #64748b; font-size: 13px; }
+#googleButton { display: flex; justify-content: center; }
+.logout-btn { padding: 4px 10px; font-size: 12px; }
 .modal-box input { text-align: center; }

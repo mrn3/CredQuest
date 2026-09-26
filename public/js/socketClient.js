@@ -1,13 +1,17 @@
 const Net = (() => {
   let socket;
 
-  function init(name, onReady) {
+  function init(onReady) {
     socket = io();
-    State.playerId = ensurePlayerId();
-    socket.emit('join', { id: State.playerId, name });
+    socket.emit('join');
+
+    socket.on('connect_error', err => {
+      if (err && err.message === 'unauthorized') window.location.reload();
+    });
 
     socket.once('joined', data => {
       State.player = normalizePlayer(data.player);
+      State.playerId = data.player.id;
       State.catalog = data.catalog;
       State.listings = data.listings;
       onReady();

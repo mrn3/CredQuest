@@ -13,6 +13,7 @@
     <span id="playerName">Minifig</span>
     <span class="tier-badge" id="tierBadge">Rookie</span>
     <span class="cred-display">💰 <span id="credAmount">0</span> Creds</span>
+    <button id="logoutBtn" class="logout-btn hidden">Log Out</button>
   </div>
 </header>
 
@@ -198,12 +199,23 @@
 
 <div id="toast"></div>
 
-<div id="nameModal" class="modal hidden">
+<div id="authModal" class="modal hidden">
   <div class="modal-box">
     <h2>🧱 Welcome to Cred Quest!</h2>
-    <p>Enter your minifig name to start playing:</p>
-    <input id="nameModalInput" maxlength="24" placeholder="Minifig" autofocus />
-    <button id="nameModalBtn">Start Playing</button>
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" data-mode="login">Log In</button>
+      <button type="button" class="auth-tab" data-mode="register">Sign Up</button>
+    </div>
+    <form id="authForm" class="auth-form">
+      <input id="authUsername" maxlength="20" placeholder="Username" autocomplete="username" required />
+      <input id="authPassword" type="password" maxlength="200" placeholder="Password" autocomplete="current-password" required />
+      <div id="authError" class="auth-error"></div>
+      <button id="authSubmit" type="submit">Log In</button>
+    </form>
+    <div id="googleArea" class="hidden">
+      <div class="auth-divider">or</div>
+      <div id="googleButton"></div>
+    </div>
   </div>
 </div>
 
