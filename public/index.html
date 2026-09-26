@@ -23,7 +23,6 @@
   <button class="tab-btn" data-tab="home">My Home</button>
   <button class="tab-btn" data-tab="marketplace">Marketplace</button>
   <button class="tab-btn" data-tab="beasthunters">Beast Hunters</button>
-  <button class="tab-btn" data-tab="inventory">Inventory</button>
 </nav>
 
 <main>
@@ -153,39 +152,46 @@
   </section>
 
   <section id="tab-beasthunters" class="tab-panel">
-    <h2>Beast Hunters — Levels 1-50</h2>
-    <div id="levelSelectGrid" class="level-grid"></div>
-    <div id="battleArea" class="battle-area hidden">
-      <canvas id="battleCanvas" width="700" height="300"></canvas>
+    <div class="hunt-header">
+      <h2>Beast Hunters</h2>
+      <div class="hunt-status">
+        <span>Level <strong id="huntLevel">1</strong>/50</span>
+        <span>Earned this run (at risk): 💰 <strong id="huntRunCred">0</strong></span>
+      </div>
+    </div>
+    <p class="hint">Beasts must be beaten in order. Lose a fight and you lose every cred earned this run and start over at level 1.</p>
+    <div id="huntTrack" class="hunt-track"></div>
+    <div class="hunt-layout">
+    <div id="battleArea" class="battle-area">
+      <canvas id="battleCanvas" width="720" height="340"></canvas>
       <div class="battle-bars">
         <div class="bar-label">You: <span id="playerHpText"></span></div>
         <div class="hp-bar"><div id="playerHpBar" class="hp-fill player"></div></div>
         <div class="bar-label"><span id="enemyName"></span>: <span id="enemyHpText"></span></div>
         <div class="hp-bar"><div id="enemyHpBar" class="hp-fill enemy"></div></div>
       </div>
-      <div id="battleLog" class="battle-log"></div>
+      <div class="attack-modes">
+        <span>Attack with:</span>
+        <button class="attack-mode-btn" data-mode="fists">👊 Fists <small id="fistDmg"></small></button>
+        <button class="attack-mode-btn" data-mode="weapons">⚔ Weapons <small id="weaponDmg"></small></button>
+      </div>
       <div class="battle-buttons">
         <button id="fightBtn">Fight!</button>
-        <button id="closeBattleBtn">Back to Levels</button>
       </div>
+      <div id="battleLog" class="battle-log"></div>
     </div>
-  </section>
-
-  <section id="tab-inventory" class="tab-panel">
-    <h2>Inventory &amp; Equipment</h2>
-    <div class="inventory-columns">
-      <div>
-        <h3>Weapons Owned</h3>
-        <div id="ownedWeapons" class="item-grid"></div>
-        <h3>Equipped Weapons (max 3)</h3>
-        <div id="equippedWeapons" class="item-grid"></div>
-      </div>
-      <div>
-        <h3>Powerups Owned</h3>
-        <div id="ownedPowerups" class="item-grid"></div>
-        <h3>Equipped Powerups (max 2)</h3>
-        <div id="equippedPowerups" class="item-grid"></div>
-      </div>
+    <aside class="loadout">
+      <h3>Loadout</h3>
+      <div id="loadoutStats" class="loadout-stats"></div>
+      <h4>Equipped Weapons (max 3)</h4>
+      <div id="equippedWeapons" class="item-grid"></div>
+      <h4>Weapons Owned</h4>
+      <div id="ownedWeapons" class="item-grid"></div>
+      <h4>Equipped Powerups (max 2)</h4>
+      <div id="equippedPowerups" class="item-grid"></div>
+      <h4>Powerups Owned</h4>
+      <div id="ownedPowerups" class="item-grid"></div>
+    </aside>
     </div>
   </section>
 </main>
@@ -218,6 +224,7 @@
 <script src="js/world.js"></script>
 <script src="js/build.js"></script>
 <script src="js/home.js"></script>
+<script src="js/beasts.js"></script>
 <script src="js/battle.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/socketClient.js"></script>

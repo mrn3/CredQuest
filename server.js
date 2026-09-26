@@ -53,6 +53,7 @@ function newPlayer(id, name) {
     home: { houseBuildId: null, art: [], furniture: [] },
     vehicleBuildId: null,
     world: { x: 400, y: 300, homeX: 125, homeY: 155 },
+    hunt: { level: 1, runCred: 0, inFight: false },
     online: true
   };
 }
@@ -61,6 +62,7 @@ function publicPlayer(p) {
   const { id, name, cred, lifetimeCred, inventory, equipped, builtItems, home, vehicleBuildId, world } = p;
   return {
     id, name, cred, lifetimeCred, inventory, equipped, builtItems,
+    hunt: p.hunt || { level: 1, runCred: 0, inFight: false },
     home: home || { houseBuildId: null, art: [], furniture: [] },
     vehicleBuildId: vehicleBuildId || null,
     world: world || { x: 400, y: 300, homeX: 125, homeY: 155 }
@@ -142,6 +144,15 @@ io.on('connection', socket => {
     if (patch.builtItems) p.builtItems = patch.builtItems;
     if (patch.home) p.home = patch.home;
     if (patch.vehicleBuildId !== undefined) p.vehicleBuildId = patch.vehicleBuildId;
+    if (patch.hunt && typeof patch.hunt === 'object') {
+      const level = Math.round(Number(patch.hunt.level));
+      const runCred = Math.round(Number(patch.hunt.runCred));
+      p.hunt = {
+        level: Number.isFinite(level) ? Math.min(50, Math.max(1, level)) : 1,
+        runCred: Number.isFinite(runCred) ? Math.max(0, runCred) : 0,
+        inFight: patch.hunt.inFight === true
+      };
+    }
     scheduleSave();
   });
 

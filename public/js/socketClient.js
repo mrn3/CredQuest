@@ -57,6 +57,7 @@ const Net = (() => {
     p.home.furniture = p.home.furniture || [];
     p.vehicleBuildId = p.vehicleBuildId || null;
     p.world = p.world || { x: 400, y: 300, homeX: 125, homeY: 155 };
+    p.hunt = p.hunt || { level: 1, runCred: 0, inFight: false };
     return p;
   }
 
@@ -68,7 +69,8 @@ const Net = (() => {
       equipped: State.player.equipped,
       builtItems: State.player.builtItems,
       home: State.player.home,
-      vehicleBuildId: State.player.vehicleBuildId
+      vehicleBuildId: State.player.vehicleBuildId,
+      hunt: State.player.hunt
     });
   }
 

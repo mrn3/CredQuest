@@ -37,7 +37,8 @@ function getCombatStats(player) {
   const equippedWeapons = weaponsById(player.equipped.weapons || []);
   const equippedPowerups = powerupsById(player.equipped.powerups || []);
   const homeStats = getHomeStats(player);
-  let attack = 5 + tier.bonusAttack + equippedWeapons.reduce((s, w) => s + w.attack, 0);
+  const baseAttack = 5 + tier.bonusAttack;
+  let attack = baseAttack + equippedWeapons.reduce((s, w) => s + w.attack, 0);
   let health = 100 + tier.bonusHealth + homeStats.bonusHealth;
   let defense = 0;
   let attackMult = 1;
@@ -51,7 +52,8 @@ function getCombatStats(player) {
     if (p.revive) revive += p.revive;
   });
   attack = Math.round(attack * attackMult);
-  return { attack, health, defense, regen, revive, tier, homeStats };
+  const unarmedAttack = Math.round(baseAttack * attackMult);
+  return { attack, unarmedAttack, health, defense, regen, revive, tier, homeStats };
 }
 
 function findBuild(player, id) {

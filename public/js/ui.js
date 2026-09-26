@@ -6,7 +6,13 @@ const UI = (() => {
 
   function initTabs() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => showTab(btn.dataset.tab));
+      btn.addEventListener('click', () => {
+        if (typeof Battle !== 'undefined' && Battle.isFighting() && btn.dataset.tab !== 'beasthunters') {
+          toast('Finish your fight first!');
+          return;
+        }
+        showTab(btn.dataset.tab);
+      });
     });
   }
 
@@ -142,6 +148,9 @@ const UI = (() => {
         <button class="unequip-btn" data-kind="powerup" data-idx="${idx}">Unequip</button>`;
       eqP.appendChild(card);
     });
+
+    [[ownedW, 'None yet — visit the Store.'], [ownedP, 'None yet — visit the Store.'], [eqW, 'Nothing equipped.'], [eqP, 'Nothing equipped.']]
+      .forEach(([el, msg]) => { if (!el.children.length) el.innerHTML = `<div class="empty-note">${msg}</div>`; });
 
     ownedW.querySelectorAll('.equip-btn').forEach(b => b.addEventListener('click', onEquip));
     ownedP.querySelectorAll('.equip-btn').forEach(b => b.addEventListener('click', onEquip));
@@ -301,6 +310,7 @@ const UI = (() => {
     renderBuildsAndMarket();
     renderOnlinePlayers();
     if (typeof Home !== 'undefined') Home.render();
+    if (typeof Battle !== 'undefined') Battle.render();
   }
 
   return { initTabs, showTab, toast, renderAll, initMarketControls, renderOnlinePlayers };
