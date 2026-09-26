@@ -43,6 +43,7 @@ const UI = (() => {
       const card = document.createElement('div');
       card.className = 'item-card' + (locked ? ' locked' : '');
       card.innerHTML = `
+        <svg class="store-art" role="img" aria-label="${w.name}"><use href="/assets/item-art.svg#${w.id}"></use></svg>
         <div class="item-name">${w.name}</div>
         <div class="item-stat">⚔ Attack +${w.attack}</div>
         <div class="item-cost">💰${w.cost}</div>
@@ -66,6 +67,7 @@ const UI = (() => {
       if (p.attackMult) stats.push(`💥 x${p.attackMult} ATK`);
       if (p.revive) stats.push('✨ Revive');
       card.innerHTML = `
+        <svg class="store-art" role="img" aria-label="${p.name}"><use href="/assets/item-art.svg#${p.id}"></use></svg>
         <div class="item-name">${p.name}</div>
         <div class="item-stat">${stats.join(' ')}</div>
         <div class="item-cost">💰${p.cost}</div>
