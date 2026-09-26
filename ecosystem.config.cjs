@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'credquest',
-      cwd: '/home/bitnami/CredQuest',
+      name: 'brickcred',
+      cwd: '/home/bitnami/BrickCred',
       script: 'server.js',
       env: {
         NODE_ENV: 'production',

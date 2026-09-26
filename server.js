@@ -464,5 +464,5 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
 }
 
 server.listen(PORT, () => {
-  console.log(`Cred Quest running at http://localhost:${PORT}`);
+  console.log(`Brick Cred running at http://localhost:${PORT}`);
 });
